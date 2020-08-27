@@ -456,13 +456,10 @@ void addIndexVariableStaticContext(StaticContext ctx) {
 void addBlockCmdStaticContext(StaticContext ctx) {
   ctx.addCmd(new CmdDefinition(new CmdIdent(true, "times", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
       @Override
-      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
         int n = (int)((FloatValue)params.get(0)).value;
   for (int i = 0; i < n; i++) {
-    dynCtx.countStack.set(dynCtx.countStack.size() - 1, i);
-    for (Cmd cmd : block) {
-      cmd.eval(ctx, dynCtx);
-    }
+    runBlock(ctx, dynCtx, block, createCtx, i);
   }
 }
 
@@ -488,14 +485,11 @@ void addBlockCmdStaticContext(StaticContext ctx) {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(true, "cycle", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       int n = max(0, (int)((FloatValue)params.get(0)).value);
-int i = dynCtx.countStack.get(dynCtx.countStack.size() - 2);
+int i = dynCtx.countStack.get(dynCtx.countStack.size() - 1);
 
-dynCtx.countStack.set(dynCtx.countStack.size() - 1, i % n);
-for (Cmd cmd : block) {
-  cmd.eval(ctx, dynCtx);
-}
+runBlock(ctx, dynCtx, block, createCtx, i % n);
 }
 
 @Override
@@ -508,15 +502,12 @@ for (Cmd cmd : block) {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(true, "skip", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       int n = max(0, (int)((FloatValue)params.get(0)).value);
-int i = dynCtx.countStack.get(dynCtx.countStack.size() - 2);
+int i = dynCtx.countStack.get(dynCtx.countStack.size() - 1);
 
 if (i >= n) {
-  dynCtx.countStack.set(dynCtx.countStack.size() - 1, i - n);
-  for (Cmd cmd : block) {
-    cmd.eval(ctx, dynCtx);
-  }
+  runBlock(ctx, dynCtx, block, createCtx, i - n);
 }
 }
 
@@ -530,15 +521,12 @@ if (i >= n) {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(true, "thin", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       int n = max(0, (int)((FloatValue)params.get(0)).value);
-int i = dynCtx.countStack.get(dynCtx.countStack.size() - 2);
+int i = dynCtx.countStack.get(dynCtx.countStack.size() - 1);
 
 if (i % n == 0) {
-  dynCtx.countStack.set(dynCtx.countStack.size() - 1, i / n);
-  for (Cmd cmd : block) {
-    cmd.eval(ctx, dynCtx);
-  }
+  runBlock(ctx, dynCtx, block, createCtx, i / n);
 }
 }
 
@@ -552,15 +540,12 @@ if (i % n == 0) {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(true, "take", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       int n = max(0, (int)((FloatValue)params.get(0)).value);
-int i = dynCtx.countStack.get(dynCtx.countStack.size() - 2);
+int i = dynCtx.countStack.get(dynCtx.countStack.size() - 1);
 
 if (i < n) {
-  dynCtx.countStack.set(dynCtx.countStack.size() - 1, i);
-  for (Cmd cmd : block) {
-    cmd.eval(ctx, dynCtx);
-  }
+  runBlock(ctx, dynCtx, block, createCtx, i);
 }
 }
 
@@ -574,15 +559,12 @@ if (i < n) {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(true, "sec_per", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float t = ((FloatValue)params.get(0)).value;
 int per = Math.max(1, (int)(t * 60));
 
 if (dynCtx.frameCount % per == 0) {
-  dynCtx.countStack.set(dynCtx.countStack.size() - 1, dynCtx.frameCount / per);
-  for (Cmd cmd : block) {
-    cmd.eval(ctx, dynCtx);
-  }
+  runBlock(ctx, dynCtx, block, createCtx, dynCtx.frameCount / per);
 }
 }
 
@@ -596,15 +578,12 @@ if (dynCtx.frameCount % per == 0) {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(true, "per_sec", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float c = ((FloatValue)params.get(0)).value;
 int per = Math.max(1, (int)(60 / c));
 
 if (dynCtx.frameCount % per == 0) {
-  dynCtx.countStack.set(dynCtx.countStack.size() - 1, dynCtx.frameCount / per);
-  for (Cmd cmd : block) {
-    cmd.eval(ctx, dynCtx);
-  }
+  runBlock(ctx, dynCtx, block, createCtx, dynCtx.frameCount / per);
 }
 }
 
@@ -620,7 +599,7 @@ if (dynCtx.frameCount % per == 0) {
 void addProcCmdStaticContext(StaticContext ctx) {
   ctx.addCmd(new CmdDefinition(new CmdIdent(false, "v0", Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
       @Override
-      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
         PVector x = ((VecValue)params.get(0)).value;
 
   BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -633,7 +612,7 @@ void addProcCmdStaticContext(StaticContext ctx) {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "acc", Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       PVector x = ((VecValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -646,7 +625,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "c0", Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       Color x = ((ColorValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -659,7 +638,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "dc", Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       Color x = ((ColorValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -672,7 +651,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "r0", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float x = ((FloatValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -685,7 +664,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "dr", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float x = ((FloatValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -698,7 +677,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "life", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float x = ((FloatValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -715,7 +694,7 @@ for (String[] pts : new String[][] {
   }) {
   ctx.addCmd(new CmdDefinition(new CmdIdent(false, "fadein", Arrays.asList(pts))) {
     @Override
-      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float t = ((FloatValue)params.get(0)).value;
       float init = ((FloatValue)ListGetOr(params, 1, new FloatValue(0))).value;
 
@@ -736,7 +715,7 @@ for (String[] pts : new String[][] {
   }) {
   ctx.addCmd(new CmdDefinition(new CmdIdent(false, "fadeout", Arrays.asList(pts))) {
     @Override
-      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+      public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float t = ((FloatValue)params.get(0)).value;
       float init = ((FloatValue)ListGetOr(params, 1, new FloatValue(1))).value;
 
@@ -753,7 +732,7 @@ for (String[] pts : new String[][] {
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "c2c", Arrays.asList(new String[] { COLOR_TYPE_NAME, COLOR_TYPE_NAME, FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       Color c0 = ((ColorValue)params.get(0)).value;
 Color ct = ((ColorValue)params.get(1)).value;
 float t = ((FloatValue)params.get(2)).value;
@@ -774,7 +753,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "speedup", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float k = ((FloatValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -787,7 +766,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "shot", Arrays.asList(new String[] {}))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
 
 dynCtx.balls.add(ball);
@@ -803,7 +782,7 @@ dynCtx.balls.add(ball);
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "se", Arrays.asList(new String[] {}))) {
     @Override
-    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       dynCtx.playSound = true;
 }
 

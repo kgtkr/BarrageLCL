@@ -100,7 +100,7 @@ class ProcCmd extends Cmd {
     CmdDefinition cmd = ctx.cmds.get(ident);
 
     try {
-      cmd.eval(ctx, dynCtx, paramValues, null);
+      cmd.eval(ctx, dynCtx, paramValues, null, false);
     } 
     catch (DynamicException e) {
       dynCtx.errors.add(new DynamicError(e.getMessage(), this.begin, this.end));
@@ -160,21 +160,22 @@ class BlockCmd extends Cmd {
     CmdIdent ident = new CmdIdent(true, this.name, paramTypes);
     CmdDefinition cmd = ctx.cmds.get(ident);
 
-    if (this.createCtx) {
+    cmd.eval(ctx, dynCtx, paramValues, this.block, this.createCtx);
+  }
+}
+
+void runBlock(StaticContext ctx, DynamicContext dynCtx, List<Cmd> block, boolean createCtx, int i) {
+    if (createCtx) {
       dynCtx.ballStack.add(dynCtx.ballStack.get(dynCtx.ballStack.size() - 1));
     }
-    dynCtx.countStack.add(0);
-    try {
-      cmd.eval(ctx, dynCtx, paramValues, this.block);
-    } 
-    catch (DynamicException e) {
-      dynCtx.errors.add(new DynamicError(e.getMessage(), this.begin, this.end));
+    dynCtx.countStack.add(i);
+    for (Cmd cmd : block) {
+      cmd.eval(ctx, dynCtx);
     }
-    if (this.createCtx) {   
+    if (createCtx) {   
       dynCtx.ballStack.remove(dynCtx.ballStack.size() - 1);
     }
     dynCtx.countStack.remove(dynCtx.countStack.size() - 1);
-  }
 }
 
 abstract class Expr extends ASTItem {

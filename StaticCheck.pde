@@ -138,7 +138,7 @@ abstract class CmdDefinition {
     this.ident = ident;
   }
 
-  abstract void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block);
+  abstract void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx);
 
   // 追加の静的チェック
   void additionStaticCheck(StaticContext ctx, int blockDepth, List<Expr> params, List<Cmd> block, int begin, int end) {
