@@ -713,7 +713,7 @@ for (String[] pts : new String[][] {
   { FLOAT_TYPE_NAME }, 
   { FLOAT_TYPE_NAME, FLOAT_TYPE_NAME }
   }) {
-  ctx.addCmd(new CmdDefinition(new CmdIdent(false, "feedin", Arrays.asList(pts))) {
+  ctx.addCmd(new CmdDefinition(new CmdIdent(false, "fadein", Arrays.asList(pts))) {
     @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
       float t = ((FloatValue)params.get(0)).value;
@@ -734,7 +734,7 @@ for (String[] pts : new String[][] {
   { FLOAT_TYPE_NAME }, 
   { FLOAT_TYPE_NAME, FLOAT_TYPE_NAME }
   }) {
-  ctx.addCmd(new CmdDefinition(new CmdIdent(false, "feedout", Arrays.asList(pts))) {
+  ctx.addCmd(new CmdDefinition(new CmdIdent(false, "fadeout", Arrays.asList(pts))) {
     @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block) {
       float t = ((FloatValue)params.get(0)).value;

@@ -8,7 +8,7 @@ per_sec 15 {
 
   c0 red;
   # c2c red blue 5;
-  # feedout 10;
+  # fadeout 10;
 
   shot;
 }
