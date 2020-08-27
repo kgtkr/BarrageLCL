@@ -46,7 +46,10 @@ void setup() {
 
 void draw() {
   runner.update();
-
+  
+  if (frameCount % 2 != 0) {
+    return;
+  }
   // =====
 
   hint(ENABLE_DEPTH_TEST);
