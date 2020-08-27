@@ -6,7 +6,7 @@ class Runner {
   Program program;
   int frameCount = 0;
   SoundFile shotSound;
-  final int MAX_BALL = 500;
+  final int MAX_BALL = 1500;
 
   Runner(PApplet app, StaticContext ctx) {
     this.ctx = ctx;

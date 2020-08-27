@@ -29,6 +29,7 @@ class Ball {
     fill((int)(this.c.r * 255), (int)(this.c.g * 255), (int)(this.c.b * 255), (int)(this.c.a * 255));
     pushMatrix();
     translate(this.point.x, this.point.y, this.point.z);
+    sphereDetail(10);
     sphere(this.r);
     popMatrix();
   }
