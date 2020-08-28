@@ -31,6 +31,7 @@ class DynamicContext {
     this.ballStack = new ArrayList();
     this.ballStack.add(
       new BallConfig(
+      new PVector(0, 0, 0), 
       new PVector(100, 0, 0), 
       new PVector(0, 0, 0), 
       new Color(1, 1, 1, 1), 

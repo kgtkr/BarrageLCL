@@ -10,7 +10,7 @@ class Ball {
   Ball(BallConfig config) {
     this.config = config;
 
-    this.point = new PVector(0, 0, 0);
+    this.point = config.p.copy();
     this.v = config.v0.copy();
     this.c = config.c0;
     this.r = config.r0;
