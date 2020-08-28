@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.Optional;
 
 class SuggestionItem implements Comparable<SuggestionItem> {
   final String value;
@@ -127,6 +128,54 @@ class EditorListener {
   }
 }
 
+// 対応する閉じ括弧を返す
+Optional<Character> openToCloseParent(char c) {
+  switch (c) {
+    case '(':
+      return Optional.of(')');
+    case '{':
+      return Optional.of('}');
+    case '[':
+      return Optional.of(']');
+    default:
+      return Optional.empty();
+  }
+}
+
+// 対応する開き括弧を返す
+Optional<Character> closeToOpenParent(char c) {
+  switch (c) {
+    case ')':
+      return Optional.of('(');
+    case '}':
+      return Optional.of('{');
+    case ']':
+      return Optional.of('[');
+    default:
+      return Optional.empty();
+  }
+}
+
+// 行のインデントの数を返す
+int indentCount(List<Character> line) {
+  int i = 0;
+  for (char c : line) {
+    if (c != ' ') {
+      break;
+    }
+    i++;
+  }
+  return i;
+}
+
+<T> Optional<T> listGetOptioanl(List<T> list, int i) {
+  if (0 <= i && i < list.size()) {
+    return Optional.of(list.get(i));
+  } else {
+    return Optional.empty();
+  }
+}
+
 // インデント考慮…
 // タブでインデント(2)
 
@@ -169,6 +218,7 @@ class CodeEditor {
   }
 
   // カーソルの前後に括弧のペアがあるかチェック
+  // カーソル前後に文字がなければfalse
   boolean isCursorParent() {
     List<Character> line = this.lines.get(this.rowPos);
     if (0 < this.colPos && this.colPos < line.size()) {
@@ -293,16 +343,6 @@ class CodeEditor {
         s.append(c);
       }
       s.append('\n');
-    }
-
-    return s.toString();
-  }
-
-
-  String getLine(int i) {
-    StringBuffer s = new StringBuffer();
-    for (char c : this.lines.get(i)) {
-      s.append(c);
     }
 
     return s.toString();
@@ -492,11 +532,15 @@ class CodeEditor {
       }
       this.editorListener.insertLine();
     } else if (keyCode == BACKSPACE) {
-      this.deleteChar();
+      boolean isRemove =  this.deleteChar();
       if (this.suggestion != null) {
         this.findSuggestion();
       }
-      this.editorListener.removeChar();
+      if (isRemove) {
+        this.editorListener.removeChar();
+      } else {
+        this.editorListener.cursorMoveFail();
+      }
     } else if (keyCode == LEFT) {
       this.toLeft();
       move = true;
@@ -570,7 +614,7 @@ class CodeEditor {
     this.codeAnalize();
   }
 
-  void deleteChar() {
+  boolean deleteChar() {
     this.withinlizeColPos();
 
     if (this.colPos > 0) {
@@ -579,21 +623,30 @@ class CodeEditor {
         line.remove(this.colPos);
         this.colPos--;
         line.remove(this.colPos);
+
+        return true;
       } else if (this.isCursorLeftAllSpace()) {
         int removeLen = this.colPos % INDENT_SIZE == 0 ? INDENT_SIZE : this.colPos % INDENT_SIZE ;
         for (int i = 0; i < removeLen; i++) {
           line.remove(0);
         }
         this.colPos -= removeLen;
+
+        return true;
       } else {
         line.remove(this.colPos - 1);
         this.colPos--;
+
+        return true;
       }
     } else if (this.rowPos > 0) {
       List<Character> removeLine = this.lines.remove(this.rowPos);
       this.setRowPos(this.rowPos - 1);
       this.colPos = this.lines.get(this.rowPos).size();
       this.lines.get(this.rowPos).addAll(removeLine);
+      return true;
+    } else {
+      return false;
     }
   }
 
