@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-import java.util.Optional;
+import javafx.util.Pair;
 
 class SuggestionItem implements Comparable<SuggestionItem> {
   final String value;
@@ -181,6 +181,60 @@ void addIndent(List<Character> line, int n) {
     for (int i = 0; i < n; i++) {
       line.add(0, ' ');
     }
+}
+
+/*
+対応する閉じ括弧の位置を探す、なければnull
+*/
+Pair<Integer, Integer> findCloseParent(List<List<Character>> lines, int rowPos, int colPos) {
+  char open = lines.get(rowPos).get(colPos);
+  char close = openToCloseParent(open);
+
+  int level = 1;
+
+  for (int i = rowPos; i < lines.size(); i++) {
+    for (int j = (i == rowPos ? colPos + 1 : 0); j < lines.get(i).size(); j++) {
+      char c = lines.get(i).get(j);
+      if (c == open) {
+        level++;
+      }
+      if (c == close) {
+        level--;
+      }
+      if (level == 0) {
+        return new Pair(i, j);
+      }
+    }
+  }
+
+  return null;
+}
+
+/*
+対応する開き括弧の位置を探す、なければnull
+*/
+Pair<Integer, Integer> findOpenParent(List<List<Character>> lines, int rowPos, int colPos) {
+  char close = lines.get(rowPos).get(colPos);
+  char open = closeToOpenParent(close);
+
+  int level = 1;
+
+  for (int i = rowPos; i >= 0; i--) {
+    for (int j = (i == rowPos ? colPos - 1 : lines.get(i).size() - 1); j >= 0; j--) {
+      char c = lines.get(i).get(j);
+      if (c == close) {
+        level++;
+      }
+      if (c == open) {
+        level--;
+      }
+      if (level == 0) {
+        return new Pair(i, j);
+      }
+    }
+  }
+
+  return null;
 }
 
 // インデント考慮…
@@ -677,24 +731,29 @@ class CodeEditor {
     if (this.isCursorParent() && line.get(this.colPos) == c) {
       this.colPos++;
     } else {
+      boolean isCursorLeftAllSpace = this.isCursorLeftAllSpace();
+
       line.add(this.colPos, c);
       this.colPos++;
 
-      switch (c) {
-      case '(': 
-        {
-          line.add(this.colPos, ')');
-          break;
-        }
-      case '{': 
-        {
-          line.add(this.colPos, '}');
-          break;
-        }
-      case '[': 
-        {
-          line.add(this.colPos, ']');
-          break;
+      if (isOpenParent(c)) {
+        line.add(this.colPos, openToCloseParent(c));
+      }
+
+      if (isCloseParent(c) && isCursorLeftAllSpace) {
+        Pair<Integer, Integer> openPos = findOpenParent(this.lines, this.rowPos, this.colPos - 1);
+        if (openPos != null) {
+          int indentCount = indentCount(line);
+          for (int i = 0; i < indentCount; i++) {
+            line.remove(0);
+            this.colPos--;
+          }
+
+          int newIndent = indentCount(this.lines.get(openPos.getKey()));
+          for (int i = 0; i < newIndent; i++) {
+            line.add(0, ' ');
+            this.colPos++;
+          }
         }
       }
     }
