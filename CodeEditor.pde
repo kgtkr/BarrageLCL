@@ -443,6 +443,57 @@ class CodeEditor {
 
     pushMatrix();
     translate((maxLineNumDigit + 1) * FONT_WIDTH, 0);
+
+    /*
+    カーソルの括弧描画
+    */
+    boolean drawParent = false;
+    int drawParentOpenRow = 0;
+    int drawParentOpenCol = 0;
+    int drawParentCloseRow = 0;
+    int drawParentCloseCol = 0;
+    {
+        List<Character> line = this.lines.get(this.rowPos);
+        int withInColPos = this.getWithinColPos();
+        if (withInColPos < line.size() && isOpenParent(line.get(withInColPos))) {
+          Pair<Integer, Integer> closePos = findCloseParent(this.lines, this.rowPos, withInColPos);
+          if (closePos != null) {
+            drawParent = true;
+            drawParentOpenRow = this.rowPos;
+            drawParentOpenCol = withInColPos;
+            drawParentCloseRow = closePos.getKey();
+            drawParentCloseCol = closePos.getValue();
+          }
+        } else if (withInColPos < line.size() && isCloseParent(line.get(withInColPos))) {
+          Pair<Integer, Integer> openPos = findOpenParent(this.lines, this.rowPos, withInColPos);
+          if (openPos != null) {
+            drawParent = true;
+            drawParentOpenRow = openPos.getKey();
+            drawParentOpenCol = openPos.getValue();
+            drawParentCloseRow = this.rowPos;
+            drawParentCloseCol = withInColPos;
+          }
+        } else if (withInColPos > 0 && isOpenParent(line.get(withInColPos - 1))) {
+          Pair<Integer, Integer> closePos = findCloseParent(this.lines, this.rowPos, withInColPos - 1);
+          if (closePos != null) {
+            drawParent = true;
+            drawParentOpenRow = this.rowPos;
+            drawParentOpenCol = withInColPos - 1;
+            drawParentCloseRow = closePos.getKey();
+            drawParentCloseCol = closePos.getValue();
+          }
+        } else if (withInColPos > 0 && isCloseParent(line.get(withInColPos - 1))) {
+          Pair<Integer, Integer> openPos = findOpenParent(this.lines, this.rowPos, withInColPos - 1);
+          if (openPos != null) {
+            drawParent = true;
+            drawParentOpenRow = openPos.getKey();
+            drawParentOpenCol = openPos.getValue();
+            drawParentCloseRow = this.rowPos;
+            drawParentCloseCol = withInColPos - 1;
+          }
+        }
+    }
+
     int pos = 0;
     for (int i = 0; i < this.drawTopLine; i++) {
       pos += this.lines.get(i).size() + 1;
@@ -479,6 +530,16 @@ class CodeEditor {
 
         if (isCursor) {
           fill(255, 255, 255, 100);
+          rect(x, y, FONT_WIDTH, FONT_HEIGHT);
+        }
+
+        if (drawParent && i == drawParentOpenRow && j == drawParentOpenCol) {
+          fill(255, 255, 0, 100);
+          rect(x, y, FONT_WIDTH, FONT_HEIGHT);
+        }
+
+        if (drawParent && i == drawParentCloseRow && j == drawParentCloseCol) {
+          fill(255, 255, 0, 100);
           rect(x, y, FONT_WIDTH, FONT_HEIGHT);
         }
 
