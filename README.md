@@ -1,12 +1,12 @@
 # BarrageLCL
-"Barrage Live Coding Language"
-Processing製の弾幕DSLです。
+"Barrage Live Coding Language"  
+3D barrage DSL made of Processing.
 
-## 依存ライブラリ
+## Dependencies
 * processing-sound
     * https://github.com/processing/processing-sound
 
-## 素材など
+## Used resources
 * 効果音ラボ
   * https://soundeffect-lab.info/
 * Google Noto Fonts
