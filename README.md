@@ -2,6 +2,11 @@
 "Barrage Live Coding Language"  
 3D barrage DSL made of Processing.
 
+## Documents
+* [Usage](./docs/Usage.md)
+* [Language Specification](./docs/Language-Specification.md)
+* [Language API](./docs/Language-API.md)
+
 ## Dependencies
 * processing-sound
     * https://github.com/processing/processing-sound
