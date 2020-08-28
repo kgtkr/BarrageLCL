@@ -128,31 +128,39 @@ class EditorListener {
   }
 }
 
+boolean isOpenParent(char c) {
+  return c == '(' || c == '{' || c == '[';
+}
+
+boolean isCloseParent(char c) {
+  return c == ')' || c == '}' || c == ']';
+}
+
 // 対応する閉じ括弧を返す
-Optional<Character> openToCloseParent(char c) {
+char openToCloseParent(char c) {
   switch (c) {
     case '(':
-      return Optional.of(')');
+      return ')';
     case '{':
-      return Optional.of('}');
+      return '}';
     case '[':
-      return Optional.of(']');
+      return ']';
     default:
-      return Optional.empty();
+      throw new RuntimeException();
   }
 }
 
 // 対応する開き括弧を返す
-Optional<Character> closeToOpenParent(char c) {
+char closeToOpenParent(char c) {
   switch (c) {
     case ')':
-      return Optional.of('(');
+      return '(';
     case '}':
-      return Optional.of('{');
+      return '{';
     case ']':
-      return Optional.of('[');
+      return '[';
     default:
-      return Optional.empty();
+      throw new RuntimeException();
   }
 }
 
@@ -173,15 +181,6 @@ void addIndent(List<Character> line, int n) {
     for (int i = 0; i < n; i++) {
       line.add(0, ' ');
     }
-}
-
-
-<T> Optional<T> listGetOptioanl(List<T> list, int i) {
-  if (0 <= i && i < list.size()) {
-    return Optional.of(list.get(i));
-  } else {
-    return Optional.empty();
-  }
 }
 
 // インデント考慮…
@@ -712,25 +711,35 @@ class CodeEditor {
   void insertLine() {
     this.withinlizeColPos();
 
+    List<Character> line = this.lines.get(this.rowPos);
+
+    boolean isCursorLeftOpenParent = 0 < this.colPos && this.colPos <= line.size() && isOpenParent(line.get(this.colPos - 1));
     boolean isCursorParent = this.isCursorParent();
 
-    List<Character> line = this.lines.get(this.rowPos);
-    List<Character> lineLeft = (List<Character>)(Object)line.stream().limit(this.colPos).collect(Collectors.toList());
-    List<Character> lineRight = (List<Character>)(Object)line.stream().skip(this.colPos).collect(Collectors.toList());
+    List<Character> lineLeft = listLimit(line, this.colPos);
+    List<Character> lineRight = listSkip(line, this.colPos);
 
-    this.lines.set(this.rowPos, lineLeft);
     int leftIndent = indentCount(lineLeft);
     addIndent(lineRight, leftIndent);
+
+    this.lines.set(this.rowPos, lineLeft);
     this.colPos = leftIndent;
+
     this.lines.add(this.rowPos + 1, lineRight);
     this.setRowPos(this.rowPos + 1);
+
+    if (isCursorLeftOpenParent) {
+      addIndent(lineRight, this.INDENT_SIZE);
+      this.colPos += this.INDENT_SIZE;
+    }
+
     if (isCursorParent) {
-      List<Character> emptyLine = new ArrayList();
-      for (int i = 0; i < leftIndent + this.INDENT_SIZE; i++) {
-        emptyLine.add(' ');
-      }
-      this.lines.add(this.rowPos, emptyLine);
-      this.colPos = emptyLine.size();
+      List<Character> lineRightLeft = listLimit(lineRight, this.colPos);
+      List<Character> lineRightRight = listSkip(lineRight, this.colPos);
+
+      this.lines.set(this.rowPos, lineRightLeft);
+      addIndent(lineRightRight, leftIndent);
+      this.lines.add(this.rowPos + 1, lineRightRight);
     }
   }
 
