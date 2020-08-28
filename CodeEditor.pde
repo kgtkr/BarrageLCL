@@ -168,6 +168,14 @@ int indentCount(List<Character> line) {
   return i;
 }
 
+
+void addIndent(List<Character> line, int n) {
+    for (int i = 0; i < n; i++) {
+      line.add(0, ' ');
+    }
+}
+
+
 <T> Optional<T> listGetOptioanl(List<T> list, int i) {
   if (0 <= i && i < list.size()) {
     return Optional.of(list.get(i));
@@ -650,25 +658,6 @@ class CodeEditor {
     }
   }
 
-  int indentCount(List<Character> line) {
-    int count = 0;
-    for (char c : line) {
-      if (c == ' ') {
-        count++;
-      } else {
-        break;
-      }
-    }
-    return count;
-  }
-
-  void indentInsertMin(List<Character> line, int c) {
-    int cur = this.indentCount(line);
-    for (int i = cur; i < c; i++) {
-      line.add(0, ' ');
-    }
-  }
-
   void insertIndent() {
     this.withinlizeColPos();
 
@@ -730,8 +719,8 @@ class CodeEditor {
     List<Character> lineRight = (List<Character>)(Object)line.stream().skip(this.colPos).collect(Collectors.toList());
 
     this.lines.set(this.rowPos, lineLeft);
-    int leftIndent = this.indentCount(lineLeft);
-    this.indentInsertMin(lineRight, leftIndent);
+    int leftIndent = indentCount(lineLeft);
+    addIndent(lineRight, leftIndent);
     this.colPos = leftIndent;
     this.lines.add(this.rowPos + 1, lineRight);
     this.setRowPos(this.rowPos + 1);
