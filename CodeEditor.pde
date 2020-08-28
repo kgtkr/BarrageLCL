@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import javafx.util.Pair;
 
 class SuggestionItem implements Comparable<SuggestionItem> {
   final String value;
@@ -127,6 +128,115 @@ class EditorListener {
   }
 }
 
+boolean isOpenParent(char c) {
+  return c == '(' || c == '{' || c == '[';
+}
+
+boolean isCloseParent(char c) {
+  return c == ')' || c == '}' || c == ']';
+}
+
+// 対応する閉じ括弧を返す
+char openToCloseParent(char c) {
+  switch (c) {
+    case '(':
+      return ')';
+    case '{':
+      return '}';
+    case '[':
+      return ']';
+    default:
+      throw new RuntimeException();
+  }
+}
+
+// 対応する開き括弧を返す
+char closeToOpenParent(char c) {
+  switch (c) {
+    case ')':
+      return '(';
+    case '}':
+      return '{';
+    case ']':
+      return '[';
+    default:
+      throw new RuntimeException();
+  }
+}
+
+// 行のインデントの数を返す
+int indentCount(List<Character> line) {
+  int i = 0;
+  for (char c : line) {
+    if (c != ' ') {
+      break;
+    }
+    i++;
+  }
+  return i;
+}
+
+
+void addIndent(List<Character> line, int n) {
+    for (int i = 0; i < n; i++) {
+      line.add(0, ' ');
+    }
+}
+
+/*
+対応する閉じ括弧の位置を探す、なければnull
+*/
+Pair<Integer, Integer> findCloseParent(List<List<Character>> lines, int rowPos, int colPos) {
+  char open = lines.get(rowPos).get(colPos);
+  char close = openToCloseParent(open);
+
+  int level = 1;
+
+  for (int i = rowPos; i < lines.size(); i++) {
+    for (int j = (i == rowPos ? colPos + 1 : 0); j < lines.get(i).size(); j++) {
+      char c = lines.get(i).get(j);
+      if (c == open) {
+        level++;
+      }
+      if (c == close) {
+        level--;
+      }
+      if (level == 0) {
+        return new Pair(i, j);
+      }
+    }
+  }
+
+  return null;
+}
+
+/*
+対応する開き括弧の位置を探す、なければnull
+*/
+Pair<Integer, Integer> findOpenParent(List<List<Character>> lines, int rowPos, int colPos) {
+  char close = lines.get(rowPos).get(colPos);
+  char open = closeToOpenParent(close);
+
+  int level = 1;
+
+  for (int i = rowPos; i >= 0; i--) {
+    for (int j = (i == rowPos ? colPos - 1 : lines.get(i).size() - 1); j >= 0; j--) {
+      char c = lines.get(i).get(j);
+      if (c == close) {
+        level++;
+      }
+      if (c == open) {
+        level--;
+      }
+      if (level == 0) {
+        return new Pair(i, j);
+      }
+    }
+  }
+
+  return null;
+}
+
 // インデント考慮…
 // タブでインデント(2)
 
@@ -169,6 +279,7 @@ class CodeEditor {
   }
 
   // カーソルの前後に括弧のペアがあるかチェック
+  // カーソル前後に文字がなければfalse
   boolean isCursorParent() {
     List<Character> line = this.lines.get(this.rowPos);
     if (0 < this.colPos && this.colPos < line.size()) {
@@ -293,16 +404,6 @@ class CodeEditor {
         s.append(c);
       }
       s.append('\n');
-    }
-
-    return s.toString();
-  }
-
-
-  String getLine(int i) {
-    StringBuffer s = new StringBuffer();
-    for (char c : this.lines.get(i)) {
-      s.append(c);
     }
 
     return s.toString();
@@ -492,11 +593,15 @@ class CodeEditor {
       }
       this.editorListener.insertLine();
     } else if (keyCode == BACKSPACE) {
-      this.deleteChar();
+      boolean isRemove =  this.deleteChar();
       if (this.suggestion != null) {
         this.findSuggestion();
       }
-      this.editorListener.removeChar();
+      if (isRemove) {
+        this.editorListener.removeChar();
+      } else {
+        this.editorListener.cursorMoveFail();
+      }
     } else if (keyCode == LEFT) {
       this.toLeft();
       move = true;
@@ -570,7 +675,7 @@ class CodeEditor {
     this.codeAnalize();
   }
 
-  void deleteChar() {
+  boolean deleteChar() {
     this.withinlizeColPos();
 
     if (this.colPos > 0) {
@@ -579,40 +684,30 @@ class CodeEditor {
         line.remove(this.colPos);
         this.colPos--;
         line.remove(this.colPos);
+
+        return true;
       } else if (this.isCursorLeftAllSpace()) {
         int removeLen = this.colPos % INDENT_SIZE == 0 ? INDENT_SIZE : this.colPos % INDENT_SIZE ;
         for (int i = 0; i < removeLen; i++) {
           line.remove(0);
         }
         this.colPos -= removeLen;
+
+        return true;
       } else {
         line.remove(this.colPos - 1);
         this.colPos--;
+
+        return true;
       }
     } else if (this.rowPos > 0) {
       List<Character> removeLine = this.lines.remove(this.rowPos);
       this.setRowPos(this.rowPos - 1);
       this.colPos = this.lines.get(this.rowPos).size();
       this.lines.get(this.rowPos).addAll(removeLine);
-    }
-  }
-
-  int indentCount(List<Character> line) {
-    int count = 0;
-    for (char c : line) {
-      if (c == ' ') {
-        count++;
-      } else {
-        break;
-      }
-    }
-    return count;
-  }
-
-  void indentInsertMin(List<Character> line, int c) {
-    int cur = this.indentCount(line);
-    for (int i = cur; i < c; i++) {
-      line.add(0, ' ');
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -636,24 +731,29 @@ class CodeEditor {
     if (this.isCursorParent() && line.get(this.colPos) == c) {
       this.colPos++;
     } else {
+      boolean isCursorLeftAllSpace = this.isCursorLeftAllSpace();
+
       line.add(this.colPos, c);
       this.colPos++;
 
-      switch (c) {
-      case '(': 
-        {
-          line.add(this.colPos, ')');
-          break;
-        }
-      case '{': 
-        {
-          line.add(this.colPos, '}');
-          break;
-        }
-      case '[': 
-        {
-          line.add(this.colPos, ']');
-          break;
+      if (isOpenParent(c)) {
+        line.add(this.colPos, openToCloseParent(c));
+      }
+
+      if (isCloseParent(c) && isCursorLeftAllSpace) {
+        Pair<Integer, Integer> openPos = findOpenParent(this.lines, this.rowPos, this.colPos - 1);
+        if (openPos != null) {
+          int indentCount = indentCount(line);
+          for (int i = 0; i < indentCount; i++) {
+            line.remove(0);
+            this.colPos--;
+          }
+
+          int newIndent = indentCount(this.lines.get(openPos.getKey()));
+          for (int i = 0; i < newIndent; i++) {
+            line.add(0, ' ');
+            this.colPos++;
+          }
         }
       }
     }
@@ -670,25 +770,35 @@ class CodeEditor {
   void insertLine() {
     this.withinlizeColPos();
 
+    List<Character> line = this.lines.get(this.rowPos);
+
+    boolean isCursorLeftOpenParent = 0 < this.colPos && this.colPos <= line.size() && isOpenParent(line.get(this.colPos - 1));
     boolean isCursorParent = this.isCursorParent();
 
-    List<Character> line = this.lines.get(this.rowPos);
-    List<Character> lineLeft = (List<Character>)(Object)line.stream().limit(this.colPos).collect(Collectors.toList());
-    List<Character> lineRight = (List<Character>)(Object)line.stream().skip(this.colPos).collect(Collectors.toList());
+    List<Character> lineLeft = listLimit(line, this.colPos);
+    List<Character> lineRight = listSkip(line, this.colPos);
+
+    int leftIndent = indentCount(lineLeft);
+    addIndent(lineRight, leftIndent);
 
     this.lines.set(this.rowPos, lineLeft);
-    int leftIndent = this.indentCount(lineLeft);
-    this.indentInsertMin(lineRight, leftIndent);
     this.colPos = leftIndent;
+
     this.lines.add(this.rowPos + 1, lineRight);
     this.setRowPos(this.rowPos + 1);
+
+    if (isCursorLeftOpenParent) {
+      addIndent(lineRight, this.INDENT_SIZE);
+      this.colPos += this.INDENT_SIZE;
+    }
+
     if (isCursorParent) {
-      List<Character> emptyLine = new ArrayList();
-      for (int i = 0; i < leftIndent + this.INDENT_SIZE; i++) {
-        emptyLine.add(' ');
-      }
-      this.lines.add(this.rowPos, emptyLine);
-      this.colPos = emptyLine.size();
+      List<Character> lineRightLeft = listLimit(lineRight, this.colPos);
+      List<Character> lineRightRight = listSkip(lineRight, this.colPos);
+
+      this.lines.set(this.rowPos, lineRightLeft);
+      addIndent(lineRightRight, leftIndent);
+      this.lines.add(this.rowPos + 1, lineRightRight);
     }
   }
 

@@ -14,3 +14,21 @@ String readFileAll(String path) {
     throw new RuntimeException(e);
   }
 }
+
+<T> List<T> listLimit(List<T> list, int n) {
+  List<T> result = new ArrayList();
+  for (int i = 0; i < min(n, list.size()); i++) {
+    result.add(list.get(i));
+  }
+
+  return result;
+}
+
+<T> List<T> listSkip(List<T> list, int n) {
+  List<T> result = new ArrayList();
+  for (int i = n; i < list.size(); i++) {
+    result.add(list.get(i));
+  }
+
+  return result;
+}
