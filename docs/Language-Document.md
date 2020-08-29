@@ -58,7 +58,7 @@ The variable reference is `variable_name`.
     * initial position
 * `init_vel: vec`
     * initial velocity
-* `acc : vec`
+* `acc: vec`
     * acceleration
 * `init_color: color`
     * initial color
