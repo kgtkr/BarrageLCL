@@ -1,8 +1,6 @@
 StaticContext makeStaticContext() {
   StaticContext ctx = new StaticContext();
 
-  addConstStaticContext(ctx);
-  addFunctionStaticContext(ctx);
   addIndexVariableStaticContext(ctx);
   addBlockCmdStaticContext(ctx);
   addProcCmdStaticContext(ctx);
