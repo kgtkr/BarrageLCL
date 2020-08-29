@@ -4,7 +4,7 @@
 
 ## Documents
 * [Usage](./docs/Usage.md)
-* [Language Specification](./docs/Language-Specification.md)
+* [Language Document](./docs/Language-Document.md)
 * [Language API](./docs/Language-API.md)
 
 ## Dependencies
