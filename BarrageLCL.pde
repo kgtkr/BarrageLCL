@@ -10,6 +10,7 @@
 boolean isCtrl;
 boolean isCmd;
 boolean isAlt;
+boolean isShift;
 final int WINDOW_WIDTH = 1200;
 final int WINDOW_HEIGHT = 800;
 final int FPS = 60;
@@ -104,6 +105,10 @@ void keyPressed() {
     isAlt = true;
   }
 
+  if (keyCode == SHIFT) {
+    isShift = true;
+  }
+
   if (editMode) {
     boolean isQuit = editor.keyPressed();
     if (isQuit) {
@@ -142,5 +147,9 @@ void keyReleased() {
 
   if (keyCode == ALT) {
     isAlt = false;
+  }
+
+  if (keyCode == SHIFT) {
+    isShift = false;
   }
 } 
