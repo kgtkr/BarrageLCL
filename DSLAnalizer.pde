@@ -17,7 +17,7 @@ class DSLAnalizer extends CodeAnalizer {
 
     for (CallableDefinition callable : this.ctx.callables.values()) {
       if (callable.ident.kind == CallableIdentKind.Variable || callable.ident.kind == CallableIdentKind.Function) {
-        this.suggestionItems.add(new SuggestionItem(callable.ident.name, callable.ident.toString() + " : " + callable.type));
+        this.suggestionItems.add(new SuggestionItem(callable.ident.name, callable.ident.toString() + ": " + callable.type));
       }
     }
 
