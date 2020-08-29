@@ -74,7 +74,7 @@ void addColorStdLib(StaticContext ctx) {
       float r = ((FloatValue)params.get(0)).value;
       float g = ((FloatValue)params.get(1)).value;
       float b = ((FloatValue)params.get(2)).value;
-      float a = ((FloatValue)ListGetOr(params, 3, new FloatValue(1))).value;
+      float a = ((FloatValue)listGetOr(params, 3, new FloatValue(1))).value;
       return new ColorValue(new Color(r, g, b, a));
     }
   }
@@ -91,7 +91,7 @@ for (String[] pts : new String[][] {
       float r = ((FloatValue)params.get(0)).value;
       float g = ((FloatValue)params.get(1)).value;
       float b = ((FloatValue)params.get(2)).value;
-      float a = ((FloatValue)ListGetOr(params, 3, new FloatValue(0))).value;
+      float a = ((FloatValue)listGetOr(params, 3, new FloatValue(0))).value;
       return new ColorValue(new Color(r, g, b, a));
     }
   }

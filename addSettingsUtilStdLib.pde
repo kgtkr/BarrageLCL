@@ -7,7 +7,7 @@ for (String[] pts : new String[][] {
     @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float t = ((FloatValue)params.get(0)).value;
-      float init = ((FloatValue)ListGetOr(params, 1, new FloatValue(0))).value;
+      float init = ((FloatValue)listGetOr(params, 1, new FloatValue(0))).value;
 
       BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
 
@@ -28,7 +28,7 @@ for (String[] pts : new String[][] {
     @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float t = ((FloatValue)params.get(0)).value;
-      float init = ((FloatValue)ListGetOr(params, 1, new FloatValue(1))).value;
+      float init = ((FloatValue)listGetOr(params, 1, new FloatValue(1))).value;
 
       BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
 

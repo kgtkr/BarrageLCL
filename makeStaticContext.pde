@@ -12,6 +12,6 @@ StaticContext makeStaticContext() {
   return ctx;
 }
 
-<A> A ListGetOr(List<A> list, int i, A defaultValue) {
+<A> A listGetOr(List<A> list, int i, A defaultValue) {
   return i < list.size() ? list.get(i) : defaultValue;
 }
