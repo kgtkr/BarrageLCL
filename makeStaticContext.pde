@@ -7,6 +7,7 @@ StaticContext makeStaticContext() {
   addCoreStdLib(ctx);
   addSettingsCoreStdLib(ctx);
   addSettingsUtilStdLib(ctx);
+  addBlockCmdStdLib(ctx);
 
   return ctx;
 }

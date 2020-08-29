@@ -1,4 +1,4 @@
-void addBlockCmd(StaticContext ctx) {
+void addBlockCmdStdLib(StaticContext ctx) {
   ctx.addCmd(new CmdDefinition(new CmdIdent(true, "times", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
       @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
