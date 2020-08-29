@@ -54,15 +54,15 @@ The variable reference is `variable_name`.
     * have four floats
     * For the color element, `0` is the lowest and `1` is the highest.
 ## Bullet settings
-* `init_pos : vec`
+* `init_pos: vec`
     * initial position
-* `init_vel : vec`
+* `init_vel: vec`
     * initial velocity
-* `init_acc : vec`
+* `acc : vec`
     * acceleration
-* `init_color : color`
+* `init_color: color`
     * initial color
-* `delta_color : color`
+* `delta_color: color`
     * color change per second.
 * `init_radius`
     * initial radius
