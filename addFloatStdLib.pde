@@ -1,5 +1,5 @@
 
-void addFloatStaticContext(StaticContext ctx) {
+void addFloatStdLib(StaticContext ctx) {
   ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("PI"), FLOAT_TYPE_NAME) {
     @Override
       public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
