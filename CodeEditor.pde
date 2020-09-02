@@ -237,10 +237,126 @@ Pair<Integer, Integer> findOpenParent(List<List<Character>> lines, int rowPos, i
   return null;
 }
 
-// インデント考慮…
-// タブでインデント(2)
+class TextField {
+  PFont font;
+  EditorListener editorListener;
+  String msg;
+
+  String resultMsg;
+  boolean resultError;
+
+  List<Character> line;
+  int pos;
+  boolean enter = false;
+  boolean quit = false;
+
+  TextField (PFont font, EditorListener editorListener, String msg, String value) {
+    this.font = font;
+    this.editorListener = editorListener;
+    this.msg = msg;
+    this.line = new ArrayList();
+    for (char c : value.toCharArray()) {
+      this.line.add(c);
+      this.pos++;
+    }
+  }
+
+  String getValue() {
+    StringBuffer s = new StringBuffer();
+    for (char c : this.line) {
+      s.append(c);
+    }
+
+    return s.toString();
+  }
+
+  void keyPressed() {
+    if (this.quit) {
+      return;
+    }
+
+    if (!this.enter) {
+      if (keyCode == ENTER) {
+        this.enter = true;
+      } else if (keyCode == BACKSPACE) {
+        if (this.pos > 0) {
+          this.line.remove(this.pos - 1);
+          this.pos--;
+          this.editorListener.removeChar();
+        } else {
+          this.editorListener.cursorMoveFail();
+        }
+      } else if (keyCode == LEFT) {
+        if (this.pos > 0) {
+          this.pos--;
+          this.editorListener.cursorMove();
+        } else {
+          this.editorListener.cursorMoveFail();
+        }
+      } else if (keyCode == RIGHT) {
+        if (this.pos < this.line.size()) {
+          this.pos++;
+          this.editorListener.cursorMove();
+        } else {
+          this.editorListener.cursorMoveFail();
+        }
+      } else if (key == ESC) {
+        this.quit = true;
+        this.editorListener.cursorMoveFail();
+      }
+    }
+  }
+
+  void keyTyped() {
+    if (!this.enter && !this.quit && isValidChar(key)) {
+      this.line.add(this.pos, key);
+      this.pos++;
+      this.editorListener.inputChar();
+    }
+  }
+
+  void draw() {
+    if (this.quit) {
+      return;
+    }
+
+    final int WIDTH = 1200;
+    final int FONT_SIZE = 14;
+    final int FONT_WIDTH = 8;
+    final int FONT_HEIGHT = FONT_SIZE;
+    textFont(this.font, FONT_SIZE);
+    textLeading(FONT_HEIGHT);
+    textAlign(LEFT, TOP);
+
+    if (this.enter && this.resultError) {
+      fill(255, 0, 0);
+      rect(0, 0, WIDTH, FONT_HEIGHT);
+    }
+
+    String text;
+    if (this.enter) {
+      text = this.resultMsg;
+    } else {
+      text = this.msg + this.getValue();
+    }
+
+    fill(255, 255, 255);
+    text(text, 0, 0);
+  
+    if (!this.enter) {
+      fill(255, 255, 255, 100);
+      rect((this.msg.length() + this.pos) * FONT_WIDTH, 0, FONT_WIDTH, FONT_HEIGHT);
+    }
+  }
+}
+
 
 class CodeEditor {
+  TextField textField = null;
+  String filename = null;
+  // 保存モードがロードモードか
+  boolean isSave; 
+
   Suggestion suggestion = null;
   // suggestion == nullの時意味なし
   int suggestionIndex = 0;
@@ -557,13 +673,16 @@ class CodeEditor {
     
     pushMatrix();
     translate(0, this.MAX_VIEW_LINE * FONT_HEIGHT);
-    if (this.analizerResult.errorMsg != null) {
+    if (this.textField != null) {
+      this.textField.draw();
+    } else if (this.analizerResult.errorMsg != null) {
       fill(255, 0, 0);
       rect(0, 0, w, FONT_HEIGHT);
 
       fill(255, 255, 255);
       text(this.analizerResult.errorMsg, 0, 0);
     }
+    
     popMatrix();
 
     noClip();
@@ -640,6 +759,53 @@ class CodeEditor {
   }
 
   boolean keyPressed() {
+    if (this.textField != null && this.textField.enter) {
+      this.textField = null;
+    }
+
+    if (this.textField != null) {
+      this.textField.keyPressed();
+      if (this.textField.quit) {
+        this.textField = null;
+      } else if (this.textField.enter && this.textField.resultMsg == null) {
+        String filename = this.textField.getValue();
+        if (!filename.matches("[a-z0-9_\\-]{1,24}")) {
+          this.textField.resultMsg = "Invalid filename.";
+          this.textField.resultError = true;
+          return false;
+        }
+
+        if (this.isSave) {
+          try {
+            writeFileAll("code/" + filename, this.getText());
+            this.filename = filename;
+
+            this.textField.resultMsg = "Saved.";
+            this.textField.resultError = false;
+            this.editorListener.insertLine();
+          } catch (RuntimeException e) {
+            this.textField.resultMsg = "Save Error.";
+            this.textField.resultError = true;
+            this.editorListener.cursorMoveFail();
+          }
+        } else {
+          try {
+            this.setText(readFileAll("code/" + filename));
+            this.filename = filename;
+
+            this.textField.resultMsg = "Loaded.";
+            this.textField.resultError = false;
+            this.editorListener.insertLine();
+          } catch (RuntimeException e) {
+            this.textField.resultMsg = "Load Error.";
+            this.textField.resultError = true;
+            this.editorListener.cursorMoveFail();
+          }
+        }
+      }
+      return false;
+    }
+
     boolean isQuit = false;
 
     int startRowPos = this.rowPos;
@@ -719,11 +885,35 @@ class CodeEditor {
   }
 
   void keyTyped() {
+    if (this.textField != null) {
+      this.textField.keyTyped();
+      return;
+    }
+
     if (isCtrl || isCmd) {
       if (key == 'k') {
         removeLine();
         this.resetSuggestion();
         this.editorListener.removeChar();
+      } else if (key == 'l') {
+        this.isSave = false;
+        this.textField = new TextField(this.font, this.editorListener, "filename: ", "");
+      } else if (key == 's' || key == 'S') {
+        this.isSave = true;
+        this.textField = new TextField(this.font, this.editorListener, "filename: ", this.filename != null ?  this.filename : "");
+        if (!isShift && this.filename != null) {
+          try {
+            writeFileAll("code/" + filename, this.getText());
+            this.textField.enter = true;
+
+            this.filename = filename;
+            this.textField.resultMsg = "Saved.";
+            this.textField.resultError = false;
+          } catch (RuntimeException e) {
+            this.textField.resultMsg = "Save Error.";
+            this.textField.resultError = true;
+          }
+        }
       }
     } else {
       if (isValidChar(key)) {

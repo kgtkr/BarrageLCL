@@ -3,12 +3,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.io.BufferedWriter;
 
 
 String readFileAll(String path) {
   try {
     List<String> lines = Files.readAllLines(Paths.get(dataPath(path)), Charset.forName("UTF-8"));
     return String.join("\n", lines);
+  } 
+  catch (IOException e) {
+    throw new RuntimeException(e);
+  }
+}
+
+void writeFileAll(String path, String text) {
+  try {
+    BufferedWriter writer = Files.newBufferedWriter(Paths.get(dataPath(path)), Charset.forName("UTF-8"));
+    writer.write(text);
+    writer.close();
   } 
   catch (IOException e) {
     throw new RuntimeException(e);
