@@ -12,5 +12,8 @@
 ## Edit Mode
 * `Esc`: close editor
 * `Ctrl + K`: delete line
+* `Ctrl + S`: Save
+* `Ctrl + Shift + S`: Save As
+* `Ctrl + L`: Load
 
 The code takes effect immediately after you edit it.
