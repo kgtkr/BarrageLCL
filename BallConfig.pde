@@ -9,7 +9,7 @@ class BallConfig {
   final float life;
 
   BallConfig(
-    PVector p,
+    PVector p, 
     PVector v0, 
     PVector acc, 
     Color c0, 

@@ -65,19 +65,19 @@ void addColorStdLib(StaticContext ctx) {
   );
 
   for (String[] pts : new String[][] {
-  { FLOAT_TYPE_NAME, FLOAT_TYPE_NAME, FLOAT_TYPE_NAME }, 
-  { FLOAT_TYPE_NAME, FLOAT_TYPE_NAME, FLOAT_TYPE_NAME, FLOAT_TYPE_NAME }
-  }) {
-  ctx.addCallable(new CallableDefinition(mkFunctionCallableIdent("color", Arrays.asList(pts)), COLOR_TYPE_NAME) {
-    @Override
-      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
-      float r = ((FloatValue)params.get(0)).value;
-      float g = ((FloatValue)params.get(1)).value;
-      float b = ((FloatValue)params.get(2)).value;
-      float a = ((FloatValue)listGetOr(params, 3, new FloatValue(1))).value;
-      return new ColorValue(new Color(r, g, b, a));
+    { FLOAT_TYPE_NAME, FLOAT_TYPE_NAME, FLOAT_TYPE_NAME }, 
+    { FLOAT_TYPE_NAME, FLOAT_TYPE_NAME, FLOAT_TYPE_NAME, FLOAT_TYPE_NAME }
+    }) {
+    ctx.addCallable(new CallableDefinition(mkFunctionCallableIdent("color", Arrays.asList(pts)), COLOR_TYPE_NAME) {
+      @Override
+        public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        float r = ((FloatValue)params.get(0)).value;
+        float g = ((FloatValue)params.get(1)).value;
+        float b = ((FloatValue)params.get(2)).value;
+        float a = ((FloatValue)listGetOr(params, 3, new FloatValue(1))).value;
+        return new ColorValue(new Color(r, g, b, a));
+      }
     }
+    );
   }
-  );
-}
 }

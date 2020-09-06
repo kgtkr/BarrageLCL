@@ -46,7 +46,7 @@ void setup() {
 
 void draw() {
   runner.update();
-  
+
   if (frameCount % 2 != 0) {
     return;
   }
@@ -122,7 +122,7 @@ void keyPressed() {
     }
   } 
 
-  
+
 
   if (key == ESC) {
     key = 0;
