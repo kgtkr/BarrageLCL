@@ -2,8 +2,8 @@ void addCoreStdLib(StaticContext ctx) {
   for (int i = 0; i < 2; i++) {
     ctx.addCallable(new CallableDefinition(
       i == 0
-      ? mkFunctionCallableIdent("i", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))
-      : mkVariableCallableIdent("i"), 
+      ? mkFunctionCallableIdent("count", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))
+      : mkVariableCallableIdent("count"), 
       FLOAT_TYPE_NAME
       ) {
         @Override
@@ -56,7 +56,7 @@ dynCtx.balls.add(ball);
 }
 });
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "se", Arrays.asList(new String[] {}))) {
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, "sound", Arrays.asList(new String[] {}))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       dynCtx.playSound = true;
@@ -65,7 +65,7 @@ ctx.addCmd(new CmdDefinition(new CmdIdent(false, "se", Arrays.asList(new String[
 @Override
   public void additionStaticCheck(StaticContext ctx, int blockDepth, List<Expr> params, List<Cmd> block, int begin, int end) {
   if (blockDepth == 0) {
-    throw new StaticCheckException("shot cannot be used on the outermost side.", begin, end);
+    throw new StaticCheckException("sound cannot be used on the outermost side.", begin, end);
   }
 }
 });
