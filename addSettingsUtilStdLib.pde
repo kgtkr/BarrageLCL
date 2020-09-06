@@ -41,7 +41,7 @@ for (String[] pts : new String[][] {
   );
 }
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "c2c", Arrays.asList(new String[] { COLOR_TYPE_NAME, COLOR_TYPE_NAME, FLOAT_TYPE_NAME }))) {
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, "color_to_color", Arrays.asList(new String[] { COLOR_TYPE_NAME, COLOR_TYPE_NAME, FLOAT_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       Color c0 = ((ColorValue)params.get(0)).value;
@@ -62,10 +62,23 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "speedup", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, "vel_up", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float k = ((FloatValue)params.get(0)).value;
+
+BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+ball = ball.withAcc(new PVector(ball.v0.x * k, ball.v0.y * k, ball.v0.z * k));
+
+dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
+}
+});
+
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, "vel_down", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
+    @Override
+    public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
+      float k = -((FloatValue)params.get(0)).value;
 
 BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
 
