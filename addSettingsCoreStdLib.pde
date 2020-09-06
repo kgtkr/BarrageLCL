@@ -12,6 +12,16 @@ void addSettingsCoreStdLib(StaticContext ctx) {
 }
 });
 
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_pos"), VEC_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new VecValue(ball.p);
+    }
+  }
+  );
+
   ctx.addCmd(new CmdDefinition(new CmdIdent(false, "init_vel", Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
       @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
@@ -24,6 +34,16 @@ void addSettingsCoreStdLib(StaticContext ctx) {
   dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
+
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_vel"), VEC_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new VecValue(ball.v0);
+    }
+  }
+  );
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "acc", Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
     @Override
@@ -38,6 +58,16 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("acc"), VEC_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new VecValue(ball.acc);
+    }
+  }
+  );
+
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "init_color", Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
@@ -50,6 +80,16 @@ ball = ball.withC0(x);
 dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
+
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_color"), COLOR_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new ColorValue(ball.c0);
+    }
+  }
+  );
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "delta_color", Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
     @Override
@@ -64,6 +104,16 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("delta_color"), COLOR_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new ColorValue(ball.dc);
+    }
+  }
+  );
+
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "init_radius", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
@@ -76,6 +126,16 @@ ball = ball.withR0(x);
 dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
+
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_radius"), FLOAT_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new FloatValue(ball.r0);
+    }
+  }
+  );
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "delta_radius", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
@@ -90,6 +150,16 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("delta_radius"), FLOAT_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new FloatValue(ball.dr);
+    }
+  }
+  );
+
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "lifetime", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
@@ -102,4 +172,14 @@ ball = ball.withLife(x);
 dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
+
+  ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("lifetime"), FLOAT_TYPE_NAME) {
+    @Override
+      public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
+        BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
+
+      return new FloatValue(ball.life);
+    }
+  }
+  );
 }
