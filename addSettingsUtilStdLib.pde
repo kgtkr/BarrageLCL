@@ -41,7 +41,9 @@ void addSettingsUtilStdLib(StaticContext ctx) {
     );
   }
 
-  ctx.addCmd(new CmdDefinition(new CmdIdent(false, "color_to_color", Arrays.asList(new String[] { COLOR_TYPE_NAME, COLOR_TYPE_NAME, FLOAT_TYPE_NAME }))) {
+  for (String ident : new String[] { "color_to_color", "c2c" }) {
+
+  ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { COLOR_TYPE_NAME, COLOR_TYPE_NAME, FLOAT_TYPE_NAME }))) {
       @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
         Color c0 = ((ColorValue)params.get(0)).value;
@@ -61,6 +63,8 @@ void addSettingsUtilStdLib(StaticContext ctx) {
   dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
+
+  }
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "vel_up", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override

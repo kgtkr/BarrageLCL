@@ -1,9 +1,10 @@
 void addCoreStdLib(StaticContext ctx) {
+  for (String ident : new String[] { "count", "i" }) {
   for (int i = 0; i < 2; i++) {
     ctx.addCallable(new CallableDefinition(
       i == 0
-      ? mkFunctionCallableIdent("count", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))
-      : mkVariableCallableIdent("count"), 
+      ? mkFunctionCallableIdent(ident, Arrays.asList(new String[] { FLOAT_TYPE_NAME }))
+      : mkVariableCallableIdent(ident), 
       FLOAT_TYPE_NAME
       ) {
         @Override
@@ -39,6 +40,7 @@ void addCoreStdLib(StaticContext ctx) {
 }
 );
 }
+  }
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "shot", Arrays.asList(new String[] {}))) {
     @Override

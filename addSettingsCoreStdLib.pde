@@ -1,5 +1,7 @@
 void addSettingsCoreStdLib(StaticContext ctx) {
-  ctx.addCmd(new CmdDefinition(new CmdIdent(false, "init_pos", Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
+  for (String ident : new String[] { "init_pos", "p0" }) {
+
+  ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
       @Override
       public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
         PVector x = ((VecValue)params.get(0)).value;
@@ -12,7 +14,7 @@ void addSettingsCoreStdLib(StaticContext ctx) {
 }
 });
 
-ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_pos"), VEC_TYPE_NAME) {
+ctx.addCallable(new CallableDefinition(mkVariableCallableIdent(ident), VEC_TYPE_NAME) {
   @Override
     public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
     BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -22,7 +24,11 @@ ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_pos"), VEC_
 }
 );
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "init_vel", Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
+  }
+
+for (String ident : new String[] { "init_vel", "v0" }) {
+
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       PVector x = ((VecValue)params.get(0)).value;
@@ -35,7 +41,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
-ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_vel"), VEC_TYPE_NAME) {
+ctx.addCallable(new CallableDefinition(mkVariableCallableIdent(ident), VEC_TYPE_NAME) {
   @Override
     public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
     BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -45,7 +51,11 @@ ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_vel"), VEC_
 }
 );
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "acc", Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
+}
+
+for (String ident : new String[] { "acc", "a" }){
+
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { VEC_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       PVector x = ((VecValue)params.get(0)).value;
@@ -58,7 +68,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
-ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("acc"), VEC_TYPE_NAME) {
+ctx.addCallable(new CallableDefinition(mkVariableCallableIdent(ident), VEC_TYPE_NAME) {
   @Override
     public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
     BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -68,7 +78,11 @@ ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("acc"), VEC_TYPE_
 }
 );
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "init_color", Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
+}
+
+for (String ident : new String[] { "init_color", "c0" }) {
+
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       Color x = ((ColorValue)params.get(0)).value;
@@ -81,7 +95,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
-ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_color"), COLOR_TYPE_NAME) {
+ctx.addCallable(new CallableDefinition(mkVariableCallableIdent(ident), COLOR_TYPE_NAME) {
   @Override
     public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
     BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -91,7 +105,11 @@ ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_color"), CO
 }
 );
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "delta_color", Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
+}
+
+for (String ident : new String[] { "delta_color", "dc" }) {
+
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { COLOR_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       Color x = ((ColorValue)params.get(0)).value;
@@ -104,7 +122,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
-ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("delta_color"), COLOR_TYPE_NAME) {
+ctx.addCallable(new CallableDefinition(mkVariableCallableIdent(ident), COLOR_TYPE_NAME) {
   @Override
     public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
     BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -114,7 +132,11 @@ ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("delta_color"), C
 }
 );
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "init_radius", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
+}
+
+for (String ident : new String[] { "init_radius", "r0" }) {
+
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float x = ((FloatValue)params.get(0)).value;
@@ -127,7 +149,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
-ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_radius"), FLOAT_TYPE_NAME) {
+ctx.addCallable(new CallableDefinition(mkVariableCallableIdent(ident), FLOAT_TYPE_NAME) {
   @Override
     public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
     BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -137,7 +159,11 @@ ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("init_radius"), F
 }
 );
 
-ctx.addCmd(new CmdDefinition(new CmdIdent(false, "delta_radius", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
+}
+
+for (String ident : new String[] { "delta_radius", "dr" }) {
+
+ctx.addCmd(new CmdDefinition(new CmdIdent(false, ident, Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
     public void eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params, List<Cmd> block, boolean createCtx) {
       float x = ((FloatValue)params.get(0)).value;
@@ -150,7 +176,7 @@ dynCtx.ballStack.set(dynCtx.ballStack.size() - 1, ball);
 }
 });
 
-ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("delta_radius"), FLOAT_TYPE_NAME) {
+ctx.addCallable(new CallableDefinition(mkVariableCallableIdent(ident), FLOAT_TYPE_NAME) {
   @Override
     public RuntimeValue eval(StaticContext ctx, DynamicContext dynCtx, List<RuntimeValue> params) {
     BallConfig ball = dynCtx.ballStack.get(dynCtx.ballStack.size() - 1);
@@ -159,6 +185,8 @@ ctx.addCallable(new CallableDefinition(mkVariableCallableIdent("delta_radius"), 
   }
 }
 );
+
+}
 
 ctx.addCmd(new CmdDefinition(new CmdIdent(false, "lifetime", Arrays.asList(new String[] { FLOAT_TYPE_NAME }))) {
     @Override
