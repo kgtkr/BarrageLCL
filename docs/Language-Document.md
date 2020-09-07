@@ -64,9 +64,9 @@ The variable reference is `variable_name`.
     * initial color
 * `delta_color: color`
     * color change per second.
-* `init_radius`
+* `init_radius : vec`
     * initial radius
-* `delta_radius`
+* `delta_radius : vec`
     * radius change per second.
-* `lifetime`
+* `lifetime : float`
     * bullet lifetime
