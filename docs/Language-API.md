@@ -76,3 +76,55 @@ Set `delta_vel` so that `vel` is increased by `k` times per second.
 
 ### `vel_down k: float`
 This equals `vel_up -k`.
+
+## Float
+### `PI: float`
+### `E: float`
+### `float + float: float`
+### `float - float: float`
+### `float * float: float`
+### `float / float: float`
+### `float % float: float`
+### `+float: float`
+### `-float: float`
+### `sin(float): float`
+### `cos(float): float`
+### `tan(float): float`
+### `log(float): float`
+### `exp(float): float`
+### `max(float, float): float`
+### `min(float, float): float`
+### `sqrt(float): float`
+### `abs(float): float`
+### `pow(float, float): float`
+### `round(float): float`
+### `ceil(float): float`
+### `floor(float): float`
+### `atan(float): float`
+### `asin(float): float`
+### `acos(float): float`
+### `atan2(float, float): float`
+### `to_rad(float): float`
+Converts an angle to a radian.
+### `rand_theta(): float`
+Returns a random number from `0 to 2π`.
+### `rand() : float` / `rand(max: float): float` / `rand(min: float, max: float): float`
+Returns a random number from `0 to 1` / `0 to max` / `min to max`.
+
+## Vec
+### `vec(float, float, float): vec`
+Create a vec from xyz.
+### `vec_rl(float, float, float): vec`
+Create a vec from two angles and length.
+
+## Color
+### `color(float, float, float, float = 1): color`
+Create a vec from rgba.
+### `red: color`
+### `green: color`
+### `blue: color`
+### `cyan: color`
+### `magenta: color`
+### `yellow: color`
+### `black: color`
+### `white: color`
