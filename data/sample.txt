@@ -4,7 +4,7 @@ per_sec 15 {
     100 * sin(0.2 * i),
     200 * sin(0.1 * i)
   );
-  # speedup -0.3;
+  # vel_down 0.3;
 
   c0 red;
   # c2c red blue 5;
