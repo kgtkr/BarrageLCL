@@ -1,11 +1,11 @@
 
-class DSLAnalizer extends CodeAnalizer {
+class DSLAnalyzer extends CodeAnalyzer {
   StaticContext ctx;
   List<Token> tokens = new ArrayList();
   List<SuggestionItem> suggestionItems = new ArrayList();
   Runner runner;
 
-  DSLAnalizer(Runner runner, StaticContext ctx) {
+  DSLAnalyzer(Runner runner, StaticContext ctx) {
     this.runner = runner;
     this.ctx = ctx;
 
@@ -79,8 +79,8 @@ class DSLAnalizer extends CodeAnalizer {
   }
 
   @Override
-  CodeAnalizerResult analize(String code) {
-    CodeAnalizerResult result = new CodeAnalizerResult();
+  CodeAnalyzerResult analize(String code) {
+    CodeAnalyzerResult result = new CodeAnalyzerResult();
     List<Token> tokens = new Lexer(code).parseTokens();
 
     for (Token token : tokens) {

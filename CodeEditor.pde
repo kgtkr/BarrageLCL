@@ -80,7 +80,7 @@ class Suggestion {
   }
 }
 
-class CodeAnalizerResult {
+class CodeAnalyzerResult {
   // nullable
   String errorMsg;
 
@@ -88,20 +88,20 @@ class CodeAnalizerResult {
 
   Set<Integer> errors;
 
-  CodeAnalizerResult(String errorMsg, Map<Integer, Color> highlights, Set<Integer> errors) {
+  CodeAnalyzerResult(String errorMsg, Map<Integer, Color> highlights, Set<Integer> errors) {
     this.errorMsg = errorMsg;
     this.highlights = highlights;
     this.errors = errors;
   }
 
-  CodeAnalizerResult() {
+  CodeAnalyzerResult() {
     this(null, new HashMap(), new HashSet());
   }
 }
 
-class CodeAnalizer {
-  CodeAnalizerResult analize(String code) {
-    return new CodeAnalizerResult();
+class CodeAnalyzer {
+  CodeAnalyzerResult analize(String code) {
+    return new CodeAnalyzerResult();
   }
 
   Suggestion suggest(String code, int pos) {
@@ -365,7 +365,7 @@ class CodeEditor {
 
   EditorListener editorListener = new EditorListener();
 
-  CodeAnalizer codeAnalizer = new CodeAnalizer();
+  CodeAnalyzer codeAnalyzer = new CodeAnalyzer();
 
   // 行の位置
   int rowPos;
@@ -378,7 +378,7 @@ class CodeEditor {
 
   PFont font;
 
-  CodeAnalizerResult analizerResult = new CodeAnalizerResult();
+  CodeAnalyzerResult analyzerResult = new CodeAnalyzerResult();
 
   final int INDENT_SIZE = 2;
 
@@ -475,7 +475,7 @@ class CodeEditor {
     }
     pos += this.colPos;
 
-    String addString = this.codeAnalizer.applySuggest(this.getText(), pos, this.suggestion.items.get(this.suggestionIndex).value);
+    String addString = this.codeAnalyzer.applySuggest(this.getText(), pos, this.suggestion.items.get(this.suggestionIndex).value);
 
     this.resetSuggestion();
     if (addString == null) {
@@ -498,7 +498,7 @@ class CodeEditor {
     }
     pos += this.colPos;
 
-    Suggestion suggestion = this.codeAnalizer.suggest(this.getText(), pos);
+    Suggestion suggestion = this.codeAnalyzer.suggest(this.getText(), pos);
 
     if (suggestion == null) {
       this.resetSuggestion();
@@ -633,8 +633,8 @@ class CodeEditor {
           fill(0, 255, 255, 100);
           text('↲', x, y);
         } else {
-          if (this.analizerResult.highlights.containsKey(pos)) {
-            Color cc = this.analizerResult.highlights.get(pos);
+          if (this.analyzerResult.highlights.containsKey(pos)) {
+            Color cc = this.analyzerResult.highlights.get(pos);
             fill((int)(cc.r * 255), (int)(cc.g * 255), (int)(cc.b * 255));
           } else {
             fill(255, 255, 255);
@@ -659,7 +659,7 @@ class CodeEditor {
           rect(x, y, FONT_WIDTH, FONT_HEIGHT);
         }
 
-        if (this.analizerResult.errors.contains(pos)) {
+        if (this.analyzerResult.errors.contains(pos)) {
           fill(255, 0, 0, 50);
           rect(x, y, FONT_WIDTH, FONT_HEIGHT);
         }
@@ -675,12 +675,12 @@ class CodeEditor {
     translate(0, this.MAX_VIEW_LINE * FONT_HEIGHT);
     if (this.textField != null) {
       this.textField.draw();
-    } else if (this.analizerResult.errorMsg != null) {
+    } else if (this.analyzerResult.errorMsg != null) {
       fill(255, 0, 0);
       rect(0, 0, w, FONT_HEIGHT);
 
       fill(255, 255, 255);
-      text(this.analizerResult.errorMsg, 0, 0);
+      text(this.analyzerResult.errorMsg, 0, 0);
     }
     
     popMatrix();
@@ -1054,7 +1054,7 @@ class CodeEditor {
   }
 
   void codeAnalize() {
-    this.analizerResult = this.codeAnalizer.analize(this.getText());
+    this.analyzerResult = this.codeAnalyzer.analize(this.getText());
   }
 
   void toLeft() {

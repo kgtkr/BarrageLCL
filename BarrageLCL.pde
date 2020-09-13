@@ -22,7 +22,7 @@ boolean showAxis = false;
 boolean editMode = false;
 CodeEditor editor;
 Runner runner;
-DSLAnalizer analizer;
+DSLAnalyzer analyzer;
 void settings() {
   size(WINDOW_WIDTH, WINDOW_HEIGHT, P3D);
 }
@@ -35,9 +35,9 @@ void setup() {
   StaticContext ctx = makeStaticContext();
 
   runner = new Runner(this, ctx);
-  analizer = new DSLAnalizer(runner, ctx);
+  analyzer = new DSLAnalyzer(runner, ctx);
   editor = new CodeEditor();
-  editor.codeAnalizer = analizer;
+  editor.codeAnalyzer = analyzer;
   editor.editorListener = new SEPlayerEditorListener(this);
 
   String sample = readFileAll("sample.txt");
