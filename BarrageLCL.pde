@@ -16,7 +16,7 @@ final int WINDOW_HEIGHT = 800;
 final int FPS = 60;
 final float SPF = 1.0 / FPS;
 
-CameraCcontroller cameraCcontroller = new CameraCcontroller();
+CameraController cameraController = new CameraController();
 
 boolean showAxis = false;
 boolean editMode = false;
@@ -55,8 +55,8 @@ void draw() {
   hint(ENABLE_DEPTH_TEST);
   background(0, 0, 0);
 
-  cameraCcontroller.draw();
-  PVector cameraPoint = cameraCcontroller.getPoint();
+  cameraController.draw();
+  PVector cameraPoint = cameraController.getPoint();
 
   if (showAxis) {
     strokeWeight(2);
@@ -81,15 +81,15 @@ void draw() {
 }
 
 void mousePressed() {
-  cameraCcontroller.mousePressed();
+  cameraController.mousePressed();
 }
 
 void mouseDragged() {
-  cameraCcontroller.mouseDragged();
+  cameraController.mouseDragged();
 }
 
 void mouseWheel(MouseEvent event) {
-  cameraCcontroller.mouseWheel(event);
+  cameraController.mouseWheel(event);
 }
 
 void keyPressed() {

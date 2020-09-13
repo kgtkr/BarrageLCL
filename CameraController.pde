@@ -1,8 +1,8 @@
 // 参考: http://titech-ssr.blog.jp/archives/1047616866.html
-class CameraCcontroller {
+class CameraController {
   final PVector EYE = new PVector(0, 0, 500);
   PMatrix3D matrix;
-  CameraCcontroller() {
+  CameraController() {
     this.matrix = new PMatrix3D();
   }
   void draw() {
