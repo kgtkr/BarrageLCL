@@ -987,7 +987,7 @@ class CodeEditor {
       line.add(this.colPos, c);
       this.colPos++;
 
-      if (isOpenParent(c) && (this.colPos > line.size() || line.get(this.colPos) == ' ')) {
+      if (isOpenParent(c) && (this.colPos >= line.size() || line.get(this.colPos) == ' ')) {
         line.add(this.colPos, openToCloseParent(c));
       }
 
