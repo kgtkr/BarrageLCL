@@ -46,8 +46,12 @@ class Runner {
     FloatDict dict = new FloatDict();
     for (int i = 0; i < this.balls.size(); i++) {
       Ball ball = this.balls.get(i);
-      dict.set(str(i), cameraPoint.dist(ball.point) - ball.r);
+      float d = cameraPoint.dist(ball.point) - ball.r;
+      if (Float.isFinite(d)) {
+        dict.set(str(i), d);
+      }
     }
+    
     dict.sortValuesReverse();
 
     for (String si : dict.keyArray()) {
